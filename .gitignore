@@ -10,3 +10,9 @@ wheels/
 .venv
 .env
 uv.lock
+alembic/versions/2cff57f97789_adicionando_campo_estado_em_requisitos.py
+alembic/versions/8dd0e9aa9535_corrigindo_enum_de_estados.py
+alembic/versions/39c4912bad06_adicionando_campo_estado_em_requisitos.py
+alembic/versions/317fc2870d20_adicionando_campo_estado_em_requisitos.py
+alembic/versions/4019b6fd0be5_corrigindo_enum_de_estados.py
+alembic/versions/b1981940dfee_adicionando_campo_estado_em_requisitos.py

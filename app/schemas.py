@@ -1,13 +1,27 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import datetime
+from enum import Enum
 
+# 🚀 Enum para Estados dos Requisitos
+class EstadoRequisitoEnum(str, Enum):
+    PROPOSTO = "Proposto"
+    APROVADO = "Aprovado"
+    REJEITADO = "Rejeitado"
+    IMPLEMENTADO = "Implementado"
+    EM_PRODUCAO = "Em Produção"
+
+class EstadoUpdate(BaseModel):
+    novo_estado: EstadoRequisitoEnum
+
+# 🚀 Schemas de Requisitos
 class RequisitoBase(BaseModel):
     titulo: str
     descricao: str
-    status: Optional[str] = "Em Análise"
+    estado: EstadoRequisitoEnum = EstadoRequisitoEnum.PROPOSTO
     versao: Optional[str] = "1.0"
     projeto_id: int
+
 
 class RequisitoCreate(RequisitoBase):
     pass
@@ -18,6 +32,18 @@ class RequisitoResponse(RequisitoBase):
 
     class Config:
         from_attributes  = True
+
+# 🚀 Schemas do Histórico de Estados
+class HistoricoRequisitoResponse(BaseModel):
+    id: int
+    requisito_id: int
+    usuario_id: int
+    estado_anterior: EstadoRequisitoEnum
+    estado_novo: EstadoRequisitoEnum
+    data_alteracao: datetime
+
+    class Config:
+        from_attributes = True
 
 class UserBase(BaseModel):
     name: str
