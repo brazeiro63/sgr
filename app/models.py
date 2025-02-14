@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Enum
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Enum, Text
 from sqlalchemy.orm import relationship
 from app.database import Base
 import datetime
@@ -29,14 +29,20 @@ class User(Base):
 
     requisitos = relationship("Requisito", back_populates="usuario")
 
-# 🚀 Modelo de Projeto
+# 🚀 Modelo de Projeto (Atualizado)
 class Projeto(Base):
     __tablename__ = "projetos"
 
     id = Column(Integer, primary_key=True, index=True)
     nome = Column(String, nullable=False)
+    descricao = Column(Text, nullable=True)  # 🔹 Introdução e Objetivo do Software
+    escopo = Column(Text, nullable=True)  # 🔹 Escopo do Projeto
+    perpectiva = Column(Text, nullable=True)
+    funcoes = Column(Text, nullable=True)
+    restricoes = Column(Text, nullable=True)
 
     requisitos = relationship("Requisito", back_populates="projeto")
+
 
 # 🚀 Modelo de Requisitos
 class Requisito(Base):

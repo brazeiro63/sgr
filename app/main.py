@@ -1,5 +1,5 @@
 from app import models, database, routes
-from app.routes import auth, requisitos  # Importa a rota de autenticação
+from app.routes import auth, requisitos, projetos  # Importa a rota de autenticação
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -20,6 +20,7 @@ models.Base.metadata.create_all(bind=database.engine)
 # Adicionar as rotas
 app.include_router(auth.router)  # Adiciona as rotas de autenticação
 app.include_router(requisitos.router, prefix="/api")  # 🔹 Adicionando prefixo API
+app.include_router(projetos.router, prefix="/api")  # 🔹 Adicionando prefixo API
 
 @app.get("/")
 # def root():

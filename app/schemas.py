@@ -3,6 +3,23 @@ from typing import Optional
 from datetime import datetime
 from enum import Enum
 
+
+# 🚀 Esquema de Projeto Atualizado
+class ProjetoBase(BaseModel):
+    nome: str
+    descricao: Optional[str] = None  # 🔹 Introdução e Objetivo do Software
+    escopo: Optional[str] = None  # 🔹 Escopo do Projeto
+
+class ProjetoCreate(ProjetoBase):
+    pass
+
+class ProjetoResponse(ProjetoBase):
+    id: int
+
+    class Config:
+        from_attributes = True
+
+
 # 🚀 Enum para Estados dos Requisitos
 class EstadoRequisitoEnum(str, Enum):
     PROPOSTO = "Proposto"

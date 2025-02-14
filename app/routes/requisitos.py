@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, Body
+from fastapi import APIRouter, Depends, HTTPException, Body, Query
 from sqlalchemy.orm import Session
 from app import crud, schemas, database, models
 from app.dependencies import get_current_user
+from typing import Optional
 
 def get_db():
     db = database.SessionLocal()
@@ -30,11 +31,18 @@ def criar_requisito(
 # 🚀 Listar requisitos do usuário autenticado
 @router.get("/", response_model=list[schemas.RequisitoResponse])
 def listar_requisitos(
+    projeto_id: Optional[int] = Query(None, description="Filtrar requisitos por projeto"),
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
-    """Lista apenas os requisitos do usuário autenticado."""
-    return db.query(models.Requisito).filter(models.Requisito.user_id == current_user.id).all()
+    """Lista apenas os requisitos do usuário autenticado, podendo filtrar por projeto."""
+    
+    query = db.query(models.Requisito).filter(models.Requisito.user_id == current_user.id)
+
+    if projeto_id:
+        query = query.filter(models.Requisito.projeto_id == projeto_id)
+
+    return query.all()
 
 # 🚀 Obter um requisito específico
 @router.get("/{requisito_id}", response_model=schemas.RequisitoResponse)
