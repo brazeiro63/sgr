@@ -9,6 +9,9 @@ class ProjetoBase(BaseModel):
     nome: str
     descricao: Optional[str] = None  # 🔹 Introdução e Objetivo do Software
     escopo: Optional[str] = None  # 🔹 Escopo do Projeto
+    perspectiva: Optional[str] = None
+    funcoes: Optional[str] = None
+    restricoes: Optional[str] = None
 
 class ProjetoCreate(ProjetoBase):
     pass

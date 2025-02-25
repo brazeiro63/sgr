@@ -1,8 +1,13 @@
+import json
 from fastapi import APIRouter, Depends, HTTPException, Body, Query
 from sqlalchemy.orm import Session
 from app import crud, schemas, database, models
 from app.dependencies import get_current_user
 from typing import Optional
+import httpx
+
+
+CREW_API_URL = "http://192.168.0.46:8001/crew"
 
 def get_db():
     db = database.SessionLocal()
@@ -159,3 +164,59 @@ def obter_historico_requisito(
     historico = db.query(models.HistoricoRequisito).filter(models.HistoricoRequisito.requisito_id == requisito_id).order_by(models.HistoricoRequisito.data_alteracao.desc()).all()
 
     return historico
+
+
+@router.post("/gerar_drs/{projeto_id}")
+async def gerar_drs(
+    projeto_id = int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    """
+    Chama o appdev para gerar o DRS com base nos requisitos do banco de dados.
+    """
+    projeto = db.query(models.Projeto).filter(
+        models.Projeto.id == projeto_id
+    ).all()
+
+    if not projeto:
+        raise HTTPException(status_code=404, detail="Projeto não encontrado.")
+    
+    requisitos = db.query(models.Requisito).filter(
+        models.Requisito.user_id == current_user.id,
+        models.Requisito.projeto_id == projeto_id,
+        models.Requisito.estado == "PROPOSTO"           ## Mudar para APROVADO
+    ).all()
+
+    if not requisitos:
+        raise HTTPException(status_code=404, detail="Nenhum requisito encontrado para gerar o DRS.")
+    
+    projeto_data = schemas.ProjetoResponse.from_orm(projeto[0]).dict()  # ✅ Agora é um objeto JSON válido
+    requisitos_data = [schemas.RequisitoResponse.from_orm(req).descricao for req in requisitos]
+
+    # print("Chegou no ponto de chamar a crew")
+    # print(f'Chamando a crew com: \nProjeto: {projeto}\nRequisitos: {requisitos}')
+    argumento = json.dumps({"projeto": projeto_data, "requisitos": requisitos_data}, indent=4)
+    print(f'E o conteúdo do json é: {argumento}')
+
+    # Definir o payload
+    payload = {
+        "method": "POST",  # Normalmente 'POST' é o método, mas isso não faz sentido no contexto do payload
+        "headers": {
+            "Content-Type": "application/json",  # Corrigido o erro de digitação
+##            "Authorization": f"Bearer {token}",  # Usando f-string para interpolação no Python
+        },
+        "Body": argumento  # Não é necessário usar JSON.stringify. O argumento já é uma string JSON.
+    }    
+    print(f'E o conteúdo do json é: {payload}')
+
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(f"{CREW_API_URL}/gerar_drs/", json=payload)
+            response.raise_for_status()
+            return response.json()
+    except httpx.RequestError as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao chamar o serviço de geração de DRS: {e}")
+    except HTTPException as e:
+        raise HTTPException(status_code=422, detail=f"Erro de validação: {e.errors()}")
+        

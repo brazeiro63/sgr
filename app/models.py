@@ -37,7 +37,7 @@ class Projeto(Base):
     nome = Column(String, nullable=False)
     descricao = Column(Text, nullable=True)  # 🔹 Introdução e Objetivo do Software
     escopo = Column(Text, nullable=True)  # 🔹 Escopo do Projeto
-    perpectiva = Column(Text, nullable=True)
+    perspectiva = Column(Text, nullable=True)
     funcoes = Column(Text, nullable=True)
     restricoes = Column(Text, nullable=True)
 

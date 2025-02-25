@@ -19,11 +19,16 @@ def criar_projeto(projeto: schemas.ProjetoCreate, db: Session = Depends(get_db))
         nome=projeto.nome,
         descricao=projeto.descricao,
         escopo=projeto.escopo,
+        perspectiva=projeto.perspectiva,
+        funcoes=projeto.funcoes,
+        restricoes=projeto.restricoes
+
     )
     db.add(novo_projeto)
     db.commit()
     db.refresh(novo_projeto)
     return novo_projeto
+
 
 # 🚀 Atualizar um projeto existente
 @router.put("/{projeto_id}", response_model=schemas.ProjetoResponse)
@@ -40,6 +45,9 @@ def atualizar_projeto(
     projeto_db.nome = projeto.nome
     projeto_db.descricao = projeto.descricao
     projeto_db.escopo = projeto.escopo
+    projeto_db.perspectiva=projeto.perspectiva
+    projeto_db.funcoes=projeto.funcoes
+    projeto_db.restricoes=projeto.restricoes
 
     db.commit()
     db.refresh(projeto_db)
@@ -76,7 +84,7 @@ def atualizar_projeto(
     db_projeto.nome = projeto.nome
     db_projeto.descricao = projeto.introducao
     db_projeto.escopo = projeto.escopo
-    db_projeto.perpectiva = projeto.perspectiva
+    db_projeto.perspectiva = projeto.perspectiva
     db_projeto.funcoes = projeto.funcoes
     db_projeto.restricoes = projeto.restricoes
 
